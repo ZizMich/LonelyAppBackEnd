@@ -21,8 +21,8 @@ import static org.springframework.security.config.Elements.JWT;
 
 @Component
 public class JWTGenerator {
-    public String generateToken(Authentication authentication){
-        String user = authentication.getName();
+    public String generateToken(String email ){
+        String user = email;
         Date currentdate = new Date();
         Date expiredate = new Date(currentdate.getTime()+ 70000000);
         System.out.println(expiredate.getTime());

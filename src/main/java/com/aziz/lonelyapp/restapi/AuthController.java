@@ -55,7 +55,7 @@ public class AuthController {
                             loginDto.getEmail(),
                             loginDto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String token = jwtGenerator.generateToken(authentication);
+            String token = jwtGenerator.generateToken(loginDto.getEmail());
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (BadCredentialsException e) {
             if(!userRepository.existsByEmail(loginDto.getEmail())){

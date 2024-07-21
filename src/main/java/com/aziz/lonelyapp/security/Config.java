@@ -48,9 +48,7 @@ public class Config {
                                 .requestMatchers("/tasks/**").hasAuthority("USER")
                                 .requestMatchers("/auth/**").permitAll()
                                 .anyRequest().authenticated()
-                )
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.authenticationEntryPoint(entryPoint));
+                );
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

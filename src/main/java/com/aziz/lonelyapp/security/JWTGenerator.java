@@ -21,10 +21,16 @@ import static org.springframework.security.config.Elements.JWT;
 
 @Component
 public class JWTGenerator {
-    public String generateToken(Authentication authentication){
+    /**
+     * Generates a JSON Web Token (JWT) for the given authentication.
+     *
+     * @param authentication the authentication object containing the user name
+     * @return the generated JWT as a string
+     */
+    public String generateToken(Authentication authentication) {
         String user = authentication.getName();
         Date currentdate = new Date();
-        Date expiredate = new Date(currentdate.getTime()+ 70000000);
+        Date expiredate = new Date(currentdate.getTime() + 70000000);
         System.out.println(expiredate.getTime());
         byte[] bytes = Decoders.BASE64.decode(jwtsecret);
         SecretKey key = Keys.hmacShaKeyFor(bytes);
@@ -32,23 +38,37 @@ public class JWTGenerator {
         return token;
     }
 
-    public String getUsernameFormJWT(String token){
+    /**
+     * Retrieves the username from a JSON Web Token (JWT).
+     *
+     * @param token the JWT from which to extract the username
+     * @return the username extracted from the JWT
+     */
+    public String getUsernameFormJWT(String token) {
         byte[] bytes = Decoders.BASE64.decode(jwtsecret);
         SecretKey key = Keys.hmacShaKeyFor(bytes);
         Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
         return claims.getSubject();
     }
 
-    public boolean validateToken(String token){
+    /**
+     * Validates a JSON Web Token (JWT) and returns true if it is valid.
+     *
+     * @param token the JWT to be validated
+     * @return true if the JWT is valid, false otherwise
+     * @throws AuthenticationCredentialsNotFoundException if the JWT is expired or
+     *                                                    incorrect
+     **/
+    public boolean validateToken(String token) {
         byte[] bytes = Decoders.BASE64.decode(jwtsecret);
         SecretKey key = Keys.hmacShaKeyFor(bytes);
-        try{
+        try {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new AuthenticationCredentialsNotFoundException("JWT is expired or incorrect");
         }
 
-        }
+    }
 
 }

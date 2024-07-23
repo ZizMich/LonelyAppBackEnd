@@ -59,9 +59,9 @@ public class AuthController {
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (BadCredentialsException e) {
             if(!userRepository.existsByEmail(loginDto.getEmail())){
-                return new ResponseEntity<>("This account does not exist check the spelling and try again", HttpStatus.UNAUTHORIZED);}
+                return new ResponseEntity<>("This account does not exist check the spelling and try again", HttpStatus.NOT_FOUND);}
             else{
-                return new ResponseEntity<>("The password is incorrect", HttpStatus.UNAUTHORIZED);}
+                return new ResponseEntity<>("The password is incorrect", HttpStatus.FORBIDDEN);}
 
         }
 

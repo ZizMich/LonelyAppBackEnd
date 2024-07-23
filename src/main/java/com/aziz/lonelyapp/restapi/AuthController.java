@@ -1,7 +1,5 @@
 package com.aziz.lonelyapp.restapi;
 
-
-
 import com.aziz.lonelyapp.dto.AuthResponseDTO;
 import com.aziz.lonelyapp.dto.LoginDto;
 import com.aziz.lonelyapp.dto.RegisterDto;
@@ -39,7 +37,7 @@ public class AuthController {
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-                          RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
+            RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -58,17 +56,16 @@ public class AuthController {
             String token = jwtGenerator.generateToken(loginDto.getEmail());
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (BadCredentialsException e) {
-            if(!userRepository.existsByEmail(loginDto.getEmail())){
-                return new ResponseEntity<>("This account does not exist check the spelling and try again", HttpStatus.NOT_FOUND);}
-            else{
-                return new ResponseEntity<>("The password is incorrect", HttpStatus.FORBIDDEN);}
+            if (!userRepository.existsByEmail(loginDto.getEmail())) {
+                return new ResponseEntity<>("This account does not exist check the spelling and try again",
+                        HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>("The password is incorrect", HttpStatus.UNAUTHORIZED);
+            }
 
         }
 
     }
-
-
-
 
     @PostMapping("register")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
@@ -76,14 +73,13 @@ public class AuthController {
             return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
         }
         UserEntity user = new UserEntity();
-        user.setName(String.format("USER%s",Math.random()));
+        user.setName(String.format("USER%s", Math.random()));
         user.setPassword(passwordEncoder.encode((registerDto.getPassword())));
         user.setEmail(registerDto.getEmail());
         Role roles = roleRepository.findByName("USER").get();
         user.setRoles(Collections.singletonList(roles));
 
         userRepository.save(user);
-
 
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }

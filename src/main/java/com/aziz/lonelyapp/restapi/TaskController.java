@@ -36,6 +36,13 @@ public class TaskController {
      * @param id the ID of the task to retrieve
      * @return the task with the given ID
      */
+    @GetMapping("/groups")
+    public List<String> getGroups() {
+
+        System.out.println("da");
+        return taskService.getGroups();
+    }
+
     @GetMapping("/{id}")
     public Task getTaskById(@PathVariable int id) {
         return taskService.getTaskById(id);

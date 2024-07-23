@@ -67,6 +67,9 @@ public class TasksService {
         return taskRepository.save(task);
     }
 
+    public List<String> getGroups(){
+        return taskRepository.findDistinctGroups();
+    }
     /**
      * This method deletes the task with the given id from the database.
      * 

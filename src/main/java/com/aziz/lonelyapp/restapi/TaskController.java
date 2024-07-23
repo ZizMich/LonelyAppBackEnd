@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for handling REST requests related to tasks.
@@ -36,11 +37,11 @@ public class TaskController {
      * @param id the ID of the task to retrieve
      * @return the task with the given ID
      */
-    @GetMapping("/groups")
-    public List<String> getGroups() {
+    @GetMapping("/groups/{lang}")
+    public List<String> getGroups(@PathVariable String lang) {
 
-        System.out.println("da");
-        return taskService.getGroups();
+
+        return taskService.getGroups(lang);
     }
 
     @GetMapping("/{id}")

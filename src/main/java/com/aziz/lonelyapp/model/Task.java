@@ -47,6 +47,9 @@ public class Task {
     @Column(name = "description")
     private String description;
 
+    @Column(name="language")
+    private String language;
+
     /**
      * Get the description of the task.
      * 

@@ -45,8 +45,10 @@ public class Config {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/tasks/**").hasAuthority("USER")
-                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("api/v1/tasks/**").hasAuthority("USER")
+                                .requestMatchers("api/v1/auth/**").permitAll()
+                                .requestMatchers("api/v1/tokens/refresh").permitAll()
+
                                 .anyRequest().authenticated()
                 );
 

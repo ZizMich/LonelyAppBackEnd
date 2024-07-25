@@ -35,22 +35,24 @@ public class TokenController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
-        String acessToken = request.get("access_token");
-        String refreshToken = request.get("refresh_token");
+        String acessToken = request.get("accessToken");
+        String refreshToken = request.get("refreshToken");
         if (acessToken == null || !jwt.validateExpiredToken(acessToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
         }
 
         Optional<RefreshToken> rtoken = tokenRepository.findByToken(refreshToken);
-        if (rtoken.isEmpty()){
+        if (rtoken.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
         Long uid = rtoken.get().getId();
         String username = userRepository.findById(uid).get().getEmail();
         String newAccessToken = jwt.generateToken(username);
 
-        return ResponseEntity.ok(new HashMap<String, String>() {{
+        return ResponseEntity.ok(new HashMap<String, String>() {
+            {
                 put("accessToken", newAccessToken);
-            }});
-        }
+            }
+        });
     }
+}

@@ -64,10 +64,10 @@ public class AuthController {
             String token = jwtGenerator.generateToken(loginDto.getEmail());
             String token_str = Util.generateRandomString(30);
             Optional<UserEntity> user = userRepository.findByEmail(loginDto.getEmail());
-            RefreshToken refresh_token = new RefreshToken();
-            refresh_token.setId(user.get().getId());
-            refresh_token.setToken(token_str);
-            refresh_token.setIssuedat(new Date());
+            RefreshToken refreshToken = new RefreshToken();
+            refreshToken.setId(user.get().getId());
+            refreshToken.setToken(token_str);
+            refreshToken.setIssuedat(new Date());
             Calendar calendar = Calendar.getInstance();
 
             // Add one year to the current date
@@ -75,8 +75,8 @@ public class AuthController {
 
             // Get the date object for the next year
             Date nextYearDate = calendar.getTime();
-            refresh_token.setExpiredate(nextYearDate);
-            tokenrepository.save(refresh_token);
+            refreshToken.setExpiredate(nextYearDate);
+            tokenrepository.save(refreshToken);
             return new ResponseEntity<>(new AuthResponseDTO(token,token_str), HttpStatus.OK);
         } catch (BadCredentialsException e) {
             if (!userRepository.existsByEmail(loginDto.getEmail())) {

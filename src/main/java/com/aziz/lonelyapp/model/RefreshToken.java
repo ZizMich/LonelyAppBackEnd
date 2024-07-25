@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Entity
-@Table(name = "refresh_tokens")
+@Table(name = "refreshTokens")
 public class RefreshToken {
     @Id
     @Column(name = "uid")
@@ -23,7 +23,6 @@ public class RefreshToken {
 
     @Column(name = "expiredat")
     private Date expiredate;
-
 
     public Long getId() {
         return id;

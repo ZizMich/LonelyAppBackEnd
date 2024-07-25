@@ -35,6 +35,7 @@ public class TokenController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
+        System.out.println("cought");
         String acessToken = request.get("accessToken");
         String refreshToken = request.get("refreshToken");
         if (acessToken == null || !jwt.validateExpiredToken(acessToken)) {

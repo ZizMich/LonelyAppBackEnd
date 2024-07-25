@@ -26,7 +26,7 @@ public class JWTGenerator {
     public String generateToken(String email ){
         String user = email;
         Date currentdate = new Date();
-        Date expiredate = new Date(currentdate.getTime()+ 700000);
+        Date expiredate = new Date(currentdate.getTime()+ 60000);
         byte[] bytes = Decoders.BASE64.decode(jwtsecret);
         SecretKey key = Keys.hmacShaKeyFor(bytes);
         String token = Jwts.builder().subject(user).issuedAt(new Date()).expiration(expiredate).signWith(key).compact();

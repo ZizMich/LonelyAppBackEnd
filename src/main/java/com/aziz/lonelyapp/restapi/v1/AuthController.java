@@ -1,13 +1,16 @@
-package com.aziz.lonelyapp.restapi;
+package com.aziz.lonelyapp.restapi.v1;
 
 import com.aziz.lonelyapp.dto.AuthResponseDTO;
 import com.aziz.lonelyapp.dto.LoginDto;
 import com.aziz.lonelyapp.dto.RegisterDto;
+import com.aziz.lonelyapp.model.RefreshToken;
 import com.aziz.lonelyapp.model.Role;
 import com.aziz.lonelyapp.model.UserEntity;
 import com.aziz.lonelyapp.repository.RoleRepository;
+import com.aziz.lonelyapp.repository.TokenRepository;
 import com.aziz.lonelyapp.repository.UserRepository;
 import com.aziz.lonelyapp.security.JWTGenerator;
+import com.aziz.lonelyapp.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +26,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/v1/auth")
 public class AuthController {
 
+    private final TokenRepository tokenrepository;
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
     private RoleRepository roleRepository;
@@ -37,16 +44,17 @@ public class AuthController {
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-            RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
+                          RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator, TokenRepository tokenrepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
+        this.tokenrepository = tokenrepository;
     }
 
     @PostMapping("login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -54,7 +62,22 @@ public class AuthController {
                             loginDto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtGenerator.generateToken(loginDto.getEmail());
-            return new ResponseEntity<>(token, HttpStatus.OK);
+            String token_str = Util.generateRandomString(30);
+            Optional<UserEntity> user = userRepository.findByEmail(loginDto.getEmail());
+            RefreshToken refresh_token = new RefreshToken();
+            refresh_token.setId(user.get().getId());
+            refresh_token.setToken(token_str);
+            refresh_token.setIssuedat(new Date());
+            Calendar calendar = Calendar.getInstance();
+
+            // Add one year to the current date
+            calendar.add(Calendar.YEAR, 1);
+
+            // Get the date object for the next year
+            Date nextYearDate = calendar.getTime();
+            refresh_token.setExpiredate(nextYearDate);
+            tokenrepository.save(refresh_token);
+            return new ResponseEntity<>(new AuthResponseDTO(token,token_str), HttpStatus.OK);
         } catch (BadCredentialsException e) {
             if (!userRepository.existsByEmail(loginDto.getEmail())) {
                 return new ResponseEntity<>("This account does not exist check the spelling and try again",

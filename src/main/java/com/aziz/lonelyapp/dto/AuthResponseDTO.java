@@ -6,17 +6,14 @@ package com.aziz.lonelyapp.dto;
 
 public class AuthResponseDTO {
     private String accessToken;
-    private String message;
+    private String refresh_token;
 
 
-    public AuthResponseDTO(String accessToken, String message) {
+    public AuthResponseDTO(String accessToken, String refreshtoken) {
         this.accessToken = accessToken;
-        this.message = message;
+        this.refresh_token=refreshtoken;
     }
-    public AuthResponseDTO( String message) {
 
-        this.message = message;
-    }
 
     public String getAccessToken() {
         return accessToken;
@@ -26,13 +23,12 @@ public class AuthResponseDTO {
         this.accessToken = accessToken;
     }
 
-    public String getMessage() {
-        return message;
+
+    public String getRefresh_token() {
+        return refresh_token;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setRefresh_token(String refresh_token) {
+        this.refresh_token = refresh_token;
     }
-
-
 }

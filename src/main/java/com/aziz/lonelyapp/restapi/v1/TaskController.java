@@ -1,4 +1,4 @@
-package com.aziz.lonelyapp.restapi;
+package com.aziz.lonelyapp.restapi.v1;
 
 import com.aziz.lonelyapp.model.Task;
 import com.aziz.lonelyapp.service.TasksService;
@@ -11,7 +11,7 @@ import java.util.List;
  * Controller for handling REST requests related to tasks.
  */
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("api/v1/tasks")
 public class TaskController {
 
     /**

@@ -30,12 +30,10 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class Config {
-    private final JwtAuthEntryPoint entryPoint;
     private CustomUserDetailsService userDetailsService;
     @Autowired
-    public Config(CustomUserDetailsService userDetailsService, JwtAuthEntryPoint entryPoint){
+    public Config(CustomUserDetailsService userDetailsService){
         this.userDetailsService = userDetailsService;
-        this.entryPoint = entryPoint;
     }
 
     @Bean
@@ -48,6 +46,7 @@ public class Config {
                                 .requestMatchers("api/v1/tasks/**").hasAuthority("USER")
                                 .requestMatchers("api/v1/auth/**").permitAll()
                                 .requestMatchers("api/v1/tokens/refresh").permitAll()
+
 
                                 .anyRequest().authenticated()
                 );

@@ -67,6 +67,12 @@ public class TaskController {
      */
     @GetMapping("/group/{group}")
     public List<Task> getTasksByGroup(@PathVariable String group) {
+        try {
+            Thread.sleep(2000); // 2000 milliseconds = 2 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return taskService.getTasksByTgroup(group);
     }
 
@@ -76,18 +82,18 @@ public class TaskController {
      * @param task the task to create
      * @return the created task
      */
-    @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.saveTask(task);
-    }
+//    @PostMapping
+//    public Task createTask(@RequestBody Task task) {
+//        return taskService.saveTask(task);
+//    }
 
     /**
      * Deletes a task from the repository by its ID.
      *
      * @param id the ID of the task to delete
      */
-    @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable int id) {
-        taskService.deleteTask(id);
-    }
+//    @DeleteMapping("/{id}")
+//    public void deleteTask(@PathVariable int id) {
+//        taskService.deleteTask(id);
+//    }
 }

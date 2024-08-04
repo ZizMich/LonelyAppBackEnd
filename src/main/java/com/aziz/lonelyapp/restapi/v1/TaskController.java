@@ -3,9 +3,14 @@ package com.aziz.lonelyapp.restapi.v1;
 import com.aziz.lonelyapp.model.Task;
 import com.aziz.lonelyapp.service.TasksService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for handling REST requests related to tasks.
@@ -37,10 +42,27 @@ public class TaskController {
      * @return the task with the given ID
      */
     @GetMapping("/groups/{lang}")
-    public List<String> getGroups(@PathVariable String lang) {
+    public ResponseEntity<?> getGroups(@PathVariable String lang) {
 
 
-        return taskService.getGroups(lang);
+        List<Task> allTasks = taskService.getGroups(lang);
+        Map<String, ArrayList<Map<String, Object>>> responsemap = new HashMap<>();
+        for (Task task : allTasks) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", task.getId());
+            map.put("title", task.getTitle());
+            map.put("description", task.getDescription());
+            map.put("number", task.getNumber());
+
+            // Check if the group already exists in the response map
+            if (!responsemap.containsKey(task.getGroup())) {
+                responsemap.put(task.getGroup(), new ArrayList<>());
+            }
+            // Add the task to the corresponding group in the response map
+            responsemap.get(task.getGroup()).add(map);
+        }
+
+        return new ResponseEntity<>(responsemap, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

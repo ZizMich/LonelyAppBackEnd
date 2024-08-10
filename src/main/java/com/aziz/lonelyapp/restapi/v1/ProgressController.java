@@ -39,19 +39,22 @@ public class ProgressController {
          }
          else {
              List<TaskProgressModel> tasks = progressRepository.findByUserid(ownId.get().getId());
-             Map<String, ArrayList<Map<String,Object>>> sorted_tasks = new HashMap<>();
+             Map<String, Map<Long, Map<String,Object>>> responsemap = new HashMap<>();
              for(TaskProgressModel task: tasks){
                  System.out.println(task);
-                 Map<String,Object> map = new HashMap<>();
-                 map.put("taskid", task.getTaskid());
-                 map.put("progress", task.getProgress());
-                 if (!sorted_tasks.containsKey(task.getTgroup())) {
-                     sorted_tasks.put(task.getTgroup(), new ArrayList<>());
+                 Map<Long, Map<String,Object>> groupmap= new HashMap<>();
+                 Map<String,Object> taskmap = new HashMap<>();
+                 groupmap.put(task.getTaskid(),taskmap);
+                 taskmap.put("progress", task.getProgress());
+                 if(responsemap.containsKey(task.getTgroup())) {
+                     if (!responsemap.get(task.getTgroup()).containsKey(task.getTaskid())) {
+                         responsemap.get(task.getTgroup()).put(task.getTaskid(), taskmap);
+                     }
+                 } else{
+                     responsemap.put(task.getTgroup(),groupmap);
                  }
-                 // Add the task to the corresponding group in the response map
-                 sorted_tasks.get(task.getTgroup()).add(map);
              }
-            return new ResponseEntity<>(sorted_tasks, HttpStatus.OK);
+            return new ResponseEntity<>(responsemap, HttpStatus.OK);
          }
     }
 }

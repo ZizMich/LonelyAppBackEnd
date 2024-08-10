@@ -46,20 +46,24 @@ public class TaskController {
 
 
         List<Task> allTasks = taskService.getGroups(lang);
-        Map<String, ArrayList<Map<String, Object>>> responsemap = new HashMap<>();
+        Map<String, Map<String, Map<String, Object>>> responsemap = new HashMap<>();
         for (Task task : allTasks) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", task.getId());
-            map.put("title", task.getTitle());
-            map.put("description", task.getDescription());
-            map.put("number", task.getNumber());
-
+            Map<String, Object> taskData = new HashMap<>();
+            Map<String, Map<String, Object>> groupData= new HashMap<>();
+            taskData.put("id", task.getId());
+            taskData.put("description", task.getDescription());
+            taskData.put("number", task.getNumber());
+            groupData.put(task.getTitle(), taskData);
             // Check if the group already exists in the response map
-            if (!responsemap.containsKey(task.getGroup())) {
-                responsemap.put(task.getGroup(), new ArrayList<>());
+            if(responsemap.containsKey(task.getGroup())) {
+                if (!responsemap.get(task.getGroup()).containsKey(task.getTitle())) {
+                    responsemap.get(task.getGroup()).put(task.getTitle(), taskData);
+                }
+            } else{
+                responsemap.put(task.getGroup(), groupData);
             }
-            // Add the task to the corresponding group in the response map
-            responsemap.get(task.getGroup()).add(map);
+
+            // Add the task to the corresponding group in the response ma
         }
 
         return new ResponseEntity<>(responsemap, HttpStatus.OK);

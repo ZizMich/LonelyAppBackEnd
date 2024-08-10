@@ -1,7 +1,6 @@
 package com.aziz.lonelyapp.restapi.v1;
 
-import com.aziz.lonelyapp.model.RefreshToken;
-import com.aziz.lonelyapp.model.Task;
+
 import com.aziz.lonelyapp.model.TaskProgressModel;
 import com.aziz.lonelyapp.model.UserEntity;
 import com.aziz.lonelyapp.repository.ProgressRepository;
@@ -13,11 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 @RestController

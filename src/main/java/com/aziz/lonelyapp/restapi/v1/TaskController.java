@@ -7,10 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Controller for handling REST requests related to tasks.
@@ -48,11 +45,14 @@ public class TaskController {
         List<Task> allTasks = taskService.getGroups(lang);
         Map<String, Map<String, Map<String, Object>>> responsemap = new HashMap<>();
         for (Task task : allTasks) {
-            Map<String, Object> taskData = new HashMap<>();
-            Map<String, Map<String, Object>> groupData= new HashMap<>();
+            System.out.println(task.getNumber());
+            Map<String, Object> taskData = new LinkedHashMap<>();
+            Map<String, Map<String, Object>> groupData= new LinkedHashMap<>(); {
+            };
             taskData.put("id", task.getId());
-            taskData.put("description", task.getDescription());
             taskData.put("number", task.getNumber());
+            taskData.put("description", task.getDescription());
+
             groupData.put(task.getTitle(), taskData);
             // Check if the group already exists in the response map
             if(responsemap.containsKey(task.getGroup())) {
@@ -93,12 +93,6 @@ public class TaskController {
      */
     @GetMapping("/group/{group}")
     public List<Task> getTasksByGroup(@PathVariable String group) {
-        try {
-            Thread.sleep(2000); // 2000 milliseconds = 2 seconds
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return taskService.getTasksByTgroup(group);
     }
 

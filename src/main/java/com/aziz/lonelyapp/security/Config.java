@@ -46,8 +46,7 @@ public class Config {
                                 .requestMatchers("api/v1/tasks/**").hasAuthority("USER")
                                 .requestMatchers("api/v1/auth/**").permitAll()
                                 .requestMatchers("api/v1/tokens/refresh").permitAll()
-
-
+                                //.requestMatchers("ws").permitAll()
                                 .anyRequest().authenticated()
                 );
 

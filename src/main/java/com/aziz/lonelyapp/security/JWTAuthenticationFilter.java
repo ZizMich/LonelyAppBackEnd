@@ -36,6 +36,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            Thread currentThread = Thread.currentThread();
+            System.out.println("token thread: " + currentThread.getName());
+            System.out.println("the security context has been set");
 
         }
         filterChain.doFilter(request, response);

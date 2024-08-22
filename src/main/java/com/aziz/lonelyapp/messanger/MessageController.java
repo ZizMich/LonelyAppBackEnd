@@ -2,17 +2,28 @@ package com.aziz.lonelyapp.messanger;
 
 
 import com.aziz.lonelyapp.dto.ReceiveMessageDTO;
+import com.aziz.lonelyapp.model.MessageEntity;
+import com.aziz.lonelyapp.repository.DirectMessagesRepository;
+import com.aziz.lonelyapp.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.socket.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MessageController implements WebSocketHandler {
+    @Autowired
+    UserRepository rep;
+
+    @Autowired
+    DirectMessagesRepository messagesRepository;
+
     public static Map<String, WebSocketSession> activeUserSessions = new HashMap<>();
     private static Boolean authenticate(WebSocketSession session){
 
@@ -41,14 +52,22 @@ public class MessageController implements WebSocketHandler {
             Map<String, Object> map = objectMapper.readValue(message.getPayload().toString(), new TypeReference<Map<String, Object>>() {});
             if(map.containsKey("receiver")){
                 if(activeUserSessions.containsKey(map.get("receiver"))){
-
                     WebSocketSession receiverSession =  activeUserSessions.get(map.get("receiver"));
                     SecurityContext context = (SecurityContext) session.getAttributes().get("SPRING_SECURITY_CONTEXT");
                     String sender = context.getAuthentication().getName();
                     String text = map.get("text").toString();
-                    ReceiveMessageDTO mess = new ReceiveMessageDTO(sender,text);
+                    Date sendAt = new Date();
+                    MessageEntity mess = new MessageEntity();
+                    mess.setMessage(text);
+                    Long fromId = rep.findByName(sender).get().getId();
+                    mess.setFrom(fromId);
+                    Long toId = rep.findByName(map.get("receiver").toString()).get().getId();
+                    mess.setTo(toId);
+                    mess.setMessage(text);
+                    mess.setSentdate(sendAt);
+                    MessageEntity e = messagesRepository.save(mess);
                     ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
-                    String prettyJsonString = writer.writeValueAsString(mess);
+                    String prettyJsonString = writer.writeValueAsString(e);
                     receiverSession.sendMessage(new TextMessage(prettyJsonString));
                 }
             }

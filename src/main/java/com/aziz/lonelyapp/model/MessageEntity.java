@@ -21,7 +21,7 @@ public class MessageEntity {
     @Column(name = "message")
     private String message;
     @Column(name = "sentdate")
-    private Date sentdate;
+    private Long sentdate;
 
     public Long getId() {
         return id;
@@ -55,11 +55,11 @@ public class MessageEntity {
         this.message = message;
     }
 
-    public Date getSentdate() {
+    public Long getSentdate() {
         return sentdate;
     }
 
-    public void setSentdate(Date sentdate) {
+    public void setSentdate(Long sentdate) {
         this.sentdate = sentdate;
     }
 }

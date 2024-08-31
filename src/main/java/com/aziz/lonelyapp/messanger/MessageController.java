@@ -47,16 +47,17 @@ public class MessageController implements WebSocketHandler {
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
+        System.out.println(message);
         try {
             // Convert JSON string to Map
             Map<String, Object> map = objectMapper.readValue(message.getPayload().toString(), new TypeReference<Map<String, Object>>() {});
             if(map.containsKey("receiver")){
                 if(activeUserSessions.containsKey(map.get("receiver"))){
+                    System.out.println("sent");
                     WebSocketSession receiverSession =  activeUserSessions.get(map.get("receiver"));
                     SecurityContext context = (SecurityContext) session.getAttributes().get("SPRING_SECURITY_CONTEXT");
                     String sender = context.getAuthentication().getName();
                     String text = map.get("text").toString();
-                    Date sendAt = new Date();
                     MessageEntity mess = new MessageEntity();
                     mess.setMessage(text);
                     Long fromId = rep.findByName(sender).get().getId();
@@ -64,11 +65,12 @@ public class MessageController implements WebSocketHandler {
                     Long toId = rep.findByName(map.get("receiver").toString()).get().getId();
                     mess.setTo(toId);
                     mess.setMessage(text);
-                    mess.setSentdate(sendAt);
+                    mess.setSentdate(System.currentTimeMillis());
                     MessageEntity e = messagesRepository.save(mess);
                     ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
                     String prettyJsonString = writer.writeValueAsString(e);
                     receiverSession.sendMessage(new TextMessage(prettyJsonString));
+                    session.sendMessage(new TextMessage(prettyJsonString));
                 }
             }
 

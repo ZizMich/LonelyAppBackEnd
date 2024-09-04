@@ -77,7 +77,7 @@ public class AuthController {
             Date nextYearDate = calendar.getTime();
             refreshToken.setExpiredate(nextYearDate);
             tokenrepository.save(refreshToken);
-            return new ResponseEntity<>(new AuthResponseDTO(token,token_str), HttpStatus.OK);
+            return new ResponseEntity<>(new AuthResponseDTO(token,token_str, user.get().getName()), HttpStatus.OK);
         } catch (BadCredentialsException e) {
             if (!userRepository.existsByEmail(loginDto.getEmail())) {
                 return new ResponseEntity<>("This account does not exist check the spelling and try again",

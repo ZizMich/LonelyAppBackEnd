@@ -24,13 +24,12 @@ public class MessageController implements WebSocketHandler {
     @Autowired
     DirectMessagesRepository messagesRepository;
 
-    public static Map<String, WebSocketSession> activeUserSessions = new HashMap<>();
+    public static Map<Long, WebSocketSession> activeUserSessions = new HashMap<>();
     private static Boolean authenticate(WebSocketSession session){
-
-        SecurityContext context = (SecurityContext) session.getAttributes().get("SPRING_SECURITY_CONTEXT");
-        if (context != null) {
-            activeUserSessions.put(context.getAuthentication().getName(),session);
-            System.out.println("WebSocket authenticated user: " + context.getAuthentication().getName());
+        Long userId = (Long) session.getAttributes().get("USER_ID");
+        if (userId != null) {
+            activeUserSessions.put(userId, session);
+            System.out.println("WebSocket authenticated user: " + userId);
             return true;
 
         } else {
@@ -52,17 +51,17 @@ public class MessageController implements WebSocketHandler {
             // Convert JSON string to Map
             Map<String, Object> map = objectMapper.readValue(message.getPayload().toString(), new TypeReference<Map<String, Object>>() {});
             if(map.containsKey("receiver")){
-                if(activeUserSessions.containsKey(map.get("receiver"))){
+                Integer rec = (Integer)map.get("receiver");
+                Long  receiver = Long.valueOf(rec);
+                if(activeUserSessions.containsKey(receiver)){
                     System.out.println("sent");
-                    WebSocketSession receiverSession =  activeUserSessions.get(map.get("receiver"));
-                    SecurityContext context = (SecurityContext) session.getAttributes().get("SPRING_SECURITY_CONTEXT");
-                    String sender = context.getAuthentication().getName();
+                    WebSocketSession receiverSession =  activeUserSessions.get(receiver);
+                    Long fromId = (Long) session.getAttributes().get("USER_ID");
                     String text = map.get("text").toString();
                     MessageEntity mess = new MessageEntity();
                     mess.setMessage(text);
-                    Long fromId = rep.findByName(sender).get().getId();
                     mess.setFrom(fromId);
-                    Long toId = rep.findByName(map.get("receiver").toString()).get().getId();
+                    Long toId = receiver;
                     mess.setTo(toId);
                     mess.setMessage(text);
                     mess.setSentdate(System.currentTimeMillis());
@@ -86,10 +85,10 @@ public class MessageController implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        SecurityContext context = (SecurityContext) session.getAttributes().get("SPRING_SECURITY_CONTEXT");
-        if (context != null) {
-            activeUserSessions.remove(context.getAuthentication().getName());
-            System.out.println("WebSocket authenticated user: " + context.getAuthentication().getName());
+        Long userId = (Long) session.getAttributes().get("USER_ID");
+        if (userId != null) {
+            activeUserSessions.remove(userId);
+            System.out.println("WebSocket authenticated user: " + userId);
         } else {
             System.out.println("WebSocket user is not authenticated");
         }

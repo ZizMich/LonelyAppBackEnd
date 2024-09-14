@@ -1,19 +1,18 @@
 package com.aziz.lonelyapp.messanger;
 
 
-import com.aziz.lonelyapp.dto.ReceiveMessageDTO;
+
 import com.aziz.lonelyapp.model.MessageEntity;
 import com.aziz.lonelyapp.repository.DirectMessagesRepository;
 import com.aziz.lonelyapp.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.socket.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +57,7 @@ public class MessageController implements WebSocketHandler {
                     WebSocketSession receiverSession =  activeUserSessions.get(receiver);
                     Long fromId = (Long) session.getAttributes().get("USER_ID");
                     String text = map.get("text").toString();
+                    if(text.length()<=250){
                     MessageEntity mess = new MessageEntity();
                     mess.setMessage(text);
                     mess.setFrom(fromId);
@@ -70,6 +70,7 @@ public class MessageController implements WebSocketHandler {
                     String prettyJsonString = writer.writeValueAsString(e);
                     receiverSession.sendMessage(new TextMessage(prettyJsonString));
                     session.sendMessage(new TextMessage(prettyJsonString));
+                    }
                 }
             }
 

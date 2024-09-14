@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMemberRepository extends JpaRepository<ChatMemberEntity, Long> {
-    List<ChatMemberEntity> findAllByMemberid(Long memberid);
+    List<ChatMemberEntity> findAllByMemberid(String memberid);
 
 }

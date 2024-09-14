@@ -46,7 +46,7 @@ public class TokenController {
         if (rtoken.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
-        Long uid = rtoken.get().getId();
+        String uid = rtoken.get().getId();
         String username = userRepository.findById(uid).get().getEmail();
         String newAccessToken = jwt.generateToken(username);
 

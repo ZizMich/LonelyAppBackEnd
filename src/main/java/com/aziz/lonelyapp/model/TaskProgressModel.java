@@ -12,7 +12,7 @@ public class TaskProgressModel {
     @Column(name = "id")
     private Long id;
     @Column(name = "userid")
-    private Long userid;
+    private String userid;
     @Column(name = "tgroup")
     private String tgroup;
 
@@ -56,11 +56,11 @@ public class TaskProgressModel {
         this.progress = progress;
     }
 
-    public Long getUserid() {
+    public String getUserid() {
         return userid;
     }
 
-    public void setUserid(Long userid) {
+    public void setUserid(String userid) {
         this.userid = userid;
     }
 }

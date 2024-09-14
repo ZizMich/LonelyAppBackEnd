@@ -18,7 +18,7 @@ public class UserEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     /**
      * The email of the user.
@@ -86,7 +86,7 @@ public class UserEntity {
      *
      * @return The unique identifier of the user.
      */
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -95,7 +95,7 @@ public class UserEntity {
      *
      * @param id The unique identifier of the user.
      */
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

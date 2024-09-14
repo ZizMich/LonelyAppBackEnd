@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ProgressRepository extends JpaRepository<TaskProgressModel, Long> {
     @Query(value = "SELECT DISTINCT tgroup FROM tasks_progress WHERE userid = :userid", nativeQuery = true)
-    List<String> findDistinctGroups(@Param("userid") Long userid);
+    List<String> findDistinctGroups(@Param("userid") String userid);
 
-    List<TaskProgressModel> findByUserid(Long userid);
+    List<TaskProgressModel> findByUserid(String userid);
 }

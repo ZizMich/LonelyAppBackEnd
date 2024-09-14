@@ -7,10 +7,10 @@ package com.aziz.lonelyapp.dto;
 public class AuthResponseDTO {
     private String accessToken;
     private String refreshToken;
-    private long userid;
+    private String userid;
 
 
-    public AuthResponseDTO(String accessToken, String refreshtoken, long userid) {
+    public AuthResponseDTO(String accessToken, String refreshtoken, String userid) {
         this.accessToken = accessToken;
         this.refreshToken=refreshtoken;
         this.userid = userid;
@@ -34,11 +34,11 @@ public class AuthResponseDTO {
         this.refreshToken = refreshToken;
     }
 
-    public long getUserid() {
+    public String getUserid() {
         return userid;
     }
 
-    public void setUserid(Long userid) {
+    public void setUserid(String userid) {
         this.userid = userid;
     }
 }

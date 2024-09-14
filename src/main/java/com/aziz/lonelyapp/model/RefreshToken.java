@@ -12,7 +12,7 @@ import java.util.Date;
 public class RefreshToken {
     @Id
     @Column(name = "uid")
-    private Long id;
+    private String id;
 
     @Column(name = "token")
     private String token;
@@ -23,11 +23,11 @@ public class RefreshToken {
     @Column(name = "expiredat")
     private Date expiredate;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -39,7 +39,7 @@ public class ChatsController {
         }
         else {
             List<ChatMemberEntity> members = chatMemberRepository.findAllByMemberid(ownId.get().getId());
-            Map<Long, String> response = new HashMap<>();
+            Map<String, String> response = new HashMap<>();
             for (ChatMemberEntity mem: members) {
                 response.put(mem.getGroupid() ,chatRepository.findById(mem.getGroupid()).get().getName());
             }

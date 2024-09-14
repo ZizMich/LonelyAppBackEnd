@@ -29,7 +29,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
         if (authentication != null) {
             String sender = authentication.getName();
-            Long id = rep.findByName(sender).get().getId();
+            String id = rep.findByName(sender).get().getId();
             attributes.put("USER_ID", id);
         }
         return true;

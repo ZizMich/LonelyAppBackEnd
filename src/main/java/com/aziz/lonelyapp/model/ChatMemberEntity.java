@@ -13,10 +13,10 @@ public class ChatMemberEntity {
 
 
     @Column(name = "groupid")
-    private Long groupid;
+    private String groupid;
 
     @Column(name = "memberid")
-    private Long memberid;
+    private String memberid;
 
     @Column(name = "role")
     private Long role;
@@ -28,19 +28,20 @@ public class ChatMemberEntity {
     }
 
 
-    public Long getMemberid() {
+    public String getMemberid() {
+
         return memberid;
     }
 
-    public void setMemberid(Long memberid) {
+    public void setMemberid(String memberid) {
         this.memberid = memberid;
     }
 
-    public Long getGroupid() {
+    public String getGroupid() {
         return groupid;
     }
 
-    public void setGroupid(Long groupid) {
+    public void setGroupid(String groupid) {
         this.groupid = groupid;
     }
 

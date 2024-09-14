@@ -23,9 +23,9 @@ public class MessageController implements WebSocketHandler {
     @Autowired
     DirectMessagesRepository messagesRepository;
 
-    public static Map<Long, WebSocketSession> activeUserSessions = new HashMap<>();
+    public static Map<String, WebSocketSession> activeUserSessions = new HashMap<>();
     private static Boolean authenticate(WebSocketSession session){
-        Long userId = (Long) session.getAttributes().get("USER_ID");
+        String userId = (String) session.getAttributes().get("USER_ID");
         if (userId != null) {
             activeUserSessions.put(userId, session);
             System.out.println("WebSocket authenticated user: " + userId);
@@ -50,19 +50,17 @@ public class MessageController implements WebSocketHandler {
             // Convert JSON string to Map
             Map<String, Object> map = objectMapper.readValue(message.getPayload().toString(), new TypeReference<Map<String, Object>>() {});
             if(map.containsKey("receiver")){
-                Integer rec = (Integer)map.get("receiver");
-                Long  receiver = Long.valueOf(rec);
-                if(activeUserSessions.containsKey(receiver)){
+                String rec = (String) map.get("receiver");
+                if(activeUserSessions.containsKey(rec)){
                     System.out.println("sent");
-                    WebSocketSession receiverSession =  activeUserSessions.get(receiver);
-                    Long fromId = (Long) session.getAttributes().get("USER_ID");
+                    WebSocketSession receiverSession =  activeUserSessions.get(rec);
+                    String fromId = (String) session.getAttributes().get("USER_ID");
                     String text = map.get("text").toString();
                     if(text.length()<=250){
                     MessageEntity mess = new MessageEntity();
                     mess.setMessage(text);
                     mess.setFrom(fromId);
-                    Long toId = receiver;
-                    mess.setTo(toId);
+                    mess.setTo(rec);
                     mess.setMessage(text);
                     mess.setSentdate(System.currentTimeMillis());
                     MessageEntity e = messagesRepository.save(mess);
@@ -86,7 +84,7 @@ public class MessageController implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        Long userId = (Long) session.getAttributes().get("USER_ID");
+        String userId = (String) session.getAttributes().get("USER_ID");
         if (userId != null) {
             activeUserSessions.remove(userId);
             System.out.println("WebSocket authenticated user: " + userId);

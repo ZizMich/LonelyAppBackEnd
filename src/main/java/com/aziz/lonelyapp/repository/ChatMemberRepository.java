@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface ChatMemberRepository extends JpaRepository<ChatMemberEntity, Long> {
     List<ChatMemberEntity> findAllByMemberid(String memberid);
 
+
+    List<ChatMemberEntity> findAllByGroupid(String groupid);
 }

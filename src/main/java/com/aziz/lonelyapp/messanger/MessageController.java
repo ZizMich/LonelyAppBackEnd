@@ -2,7 +2,9 @@ package com.aziz.lonelyapp.messanger;
 
 
 
+import com.aziz.lonelyapp.model.ChatMemberEntity;
 import com.aziz.lonelyapp.model.MessageEntity;
+import com.aziz.lonelyapp.repository.ChatMemberRepository;
 import com.aziz.lonelyapp.repository.DirectMessagesRepository;
 import com.aziz.lonelyapp.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,10 +17,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MessageController implements WebSocketHandler {
     @Autowired
     UserRepository rep;
+
+    @Autowired
+    ChatMemberRepository chatRepository;
 
     @Autowired
     DirectMessagesRepository messagesRepository;
@@ -48,34 +54,61 @@ public class MessageController implements WebSocketHandler {
         System.out.println(message);
         try {
             // Convert JSON string to Map
-            Map<String, Object> map = objectMapper.readValue(message.getPayload().toString(), new TypeReference<Map<String, Object>>() {});
-            if(map.containsKey("receiver")){
+            Map<String, Object> map = objectMapper.readValue(message.getPayload().toString(), new TypeReference<Map<String, Object>>() {
+            });
+            if (map.containsKey("receiver")) {
                 String rec = (String) map.get("receiver");
-                if(activeUserSessions.containsKey(rec)){
-                    System.out.println("sent");
-                    WebSocketSession receiverSession =  activeUserSessions.get(rec);
-                    String fromId = (String) session.getAttributes().get("USER_ID");
-                    String text = map.get("text").toString();
-                    if(text.length()<=250){
-                    MessageEntity mess = new MessageEntity();
+                System.out.println("sent");
+                String fromId = (String) session.getAttributes().get("USER_ID");
+                String text = map.get("text").toString();
+                MessageEntity mess = new MessageEntity();
+                mess.setMessage(text);
+                mess.setFrom(fromId);
+                mess.setTo(rec);
+                if (text.length() <= 250) {
                     mess.setMessage(text);
-                    mess.setFrom(fromId);
-                    mess.setTo(rec);
-                    mess.setMessage(text);
-                    mess.setSentdate(System.currentTimeMillis());
-                    MessageEntity e = messagesRepository.save(mess);
-                    ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
-                    String prettyJsonString = writer.writeValueAsString(e);
-                    receiverSession.sendMessage(new TextMessage(prettyJsonString));
-                    session.sendMessage(new TextMessage(prettyJsonString));
-                    }
-                }
-            }
+                } else {
+                    mess.setMessage(text.substring(0, 250));
 
-        } catch (Exception e) {
+                }
+                mess.setSentdate(System.currentTimeMillis());
+
+                MessageEntity e = messagesRepository.save(mess);
+                ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+                String prettyJsonString = writer.writeValueAsString(e);
+
+
+                if (rec.contains("USER")) {
+                    if (activeUserSessions.containsKey(rec)) {
+                        WebSocketSession receiverSession = activeUserSessions.get(rec);
+                        receiverSession.sendMessage(new TextMessage(prettyJsonString));
+                        session.sendMessage(new TextMessage(prettyJsonString));
+                    }
+
+                } else if (rec.contains("CHAT")) {
+                    for (ChatMemberEntity member : chatRepository.findAllByGroupid(rec)) {
+                        String receiverId = member.getMemberid();
+                        if(!Objects.equals(fromId, receiverId)){
+                            if (activeUserSessions.containsKey(receiverId)) {
+
+                            WebSocketSession receiverSession = activeUserSessions.get(receiverId);
+                            receiverSession.sendMessage(new TextMessage(prettyJsonString));
+                            }
+                        }
+
+
+                    }
+                    session.sendMessage(new TextMessage(prettyJsonString));
+                }
+
+
+            }
+        }
+            catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {

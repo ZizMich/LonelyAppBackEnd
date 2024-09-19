@@ -43,7 +43,8 @@ public class AuthController {
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-                          RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator, TokenRepository tokenrepository) {
+            RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator,
+            TokenRepository tokenrepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -76,7 +77,7 @@ public class AuthController {
             Date nextYearDate = calendar.getTime();
             refreshToken.setExpiredate(nextYearDate);
             tokenrepository.save(refreshToken);
-            return new ResponseEntity<>(new AuthResponseDTO(token,token_str, user.get().getId()), HttpStatus.OK);
+            return new ResponseEntity<>(new AuthResponseDTO(token, token_str, user.get().getId()), HttpStatus.OK);
         } catch (BadCredentialsException e) {
             if (!userRepository.existsByEmail(loginDto.getEmail())) {
                 return new ResponseEntity<>("This account does not exist check the spelling and try again",
@@ -98,8 +99,11 @@ public class AuthController {
         user.setName(String.format("USER%s", Math.random()));
         user.setPassword(passwordEncoder.encode((registerDto.getPassword())));
         user.setEmail(registerDto.getEmail());
-        Role roles = roleRepository.findByName("USER").get();
-        user.setRoles(Collections.singletonList(roles));
+        Optional<Role> roles = roleRepository.findByName("USER");
+        if (roles.isEmpty()) {
+            return new ResponseEntity<>("Role not found!", HttpStatus.NOT_FOUND);
+        }
+        user.setRoles(Collections.singletonList(roles.get()));
 
         userRepository.save(user);
 

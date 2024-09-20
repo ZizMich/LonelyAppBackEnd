@@ -45,6 +45,9 @@ public class UserEntity {
     @JoinTable(name = "uroles", joinColumns = @JoinColumn(name = "uid", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "roleid", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
 
+    @Column(name = "avatar")
+    private Long avatar;
+
     /**
      * Get the password of the user.
      *
@@ -133,5 +136,13 @@ public class UserEntity {
      */
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public Long getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Long avatar) {
+        this.avatar = avatar;
     }
 }

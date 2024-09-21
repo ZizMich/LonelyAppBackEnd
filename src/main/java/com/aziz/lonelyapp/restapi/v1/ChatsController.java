@@ -26,7 +26,6 @@ public class ChatsController {
     ChatMemberRepository chatMemberRepository;
     @GetMapping()
     public ResponseEntity<?> getActiveGroups() {
-
         System.out.println("processed");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<UserEntity> ownId = userRepository.findByName(authentication.getName());

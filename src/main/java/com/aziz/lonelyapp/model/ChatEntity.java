@@ -13,6 +13,9 @@ public class ChatEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "avatar")
+    private Long avatar;
+
     public String getId() {
         return id;
     }
@@ -27,5 +30,13 @@ public class ChatEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Long avatar) {
+        this.avatar = avatar;
     }
 }

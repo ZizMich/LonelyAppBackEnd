@@ -1,8 +1,10 @@
 package com.aziz.lonelyapp.restapi.v1;
 
 
+import com.aziz.lonelyapp.model.ChatEntity;
 import com.aziz.lonelyapp.model.UploadedPhotoEntity;
 import com.aziz.lonelyapp.model.UserEntity;
+import com.aziz.lonelyapp.repository.ChatRepository;
 import com.aziz.lonelyapp.repository.PhotoRepository;
 import com.aziz.lonelyapp.repository.UserRepository;
 import com.aziz.lonelyapp.util.Util;
@@ -35,6 +37,9 @@ public class PhotoController {
     PhotoRepository photoRepository;
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ChatRepository chatRepository;
     private void saveFile(MultipartFile file, String target) throws IOException {
         Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
         if(auth.isAuthenticated()){
@@ -69,31 +74,31 @@ public class PhotoController {
         }
     }
 
-    @GetMapping("avatar")
-    public ResponseEntity<?> upload(@RequestParam("user") String user) throws IOException {
-            Optional<UserEntity> entity =  userRepository.findById(user);
-            if(entity.isPresent()) {
-                if(entity.get().getAvatar() != null){
-                String avatar = String.valueOf(entity.get().getAvatar());
-                Path imagePath = Paths.get("photos/" + avatar + ".jpg");
-                Resource resource = new FileSystemResource(imagePath);
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.png");
-                headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-                //    return new ResponseEntity<>( Files.readAllBytes(imagePath),HttpStatus.OK);
-                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
-                }
-                else{
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-                }
+    @GetMapping("/avatar/{chat_id}")
+    public ResponseEntity<?> getAvatar(@PathVariable String chat_id) throws IOException {
+            Optional<UserEntity> userEntity =  userRepository.findById(chat_id);
+            Optional<ChatEntity> chatEntity = chatRepository.findById(chat_id);
+            String avatar;
+            if( userEntity.isPresent() && userEntity.get().getAvatar() != null){
+             avatar = String.valueOf(userEntity.get().getAvatar());
             }
-            else {
+            else if(chatEntity.isPresent() && chatEntity.get().getAvatar() != null){
+                 avatar = String.valueOf(userEntity.get().getAvatar());
+            }
+            else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            }
+            Path imagePath = Paths.get("photos/" + avatar + ".jpg");
+            Resource resource = new FileSystemResource(imagePath);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.png");
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            //    return new ResponseEntity<>( Files.readAllBytes(imagePath),HttpStatus.OK);
+            return new ResponseEntity<>(resource, headers, HttpStatus.OK);
             }
 
 
     }
 
-}
 

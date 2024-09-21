@@ -1,5 +1,6 @@
 package com.aziz.lonelyapp.restapi.v1;
 
+import com.aziz.lonelyapp.model.ChatEntity;
 import com.aziz.lonelyapp.model.ChatMemberEntity;
 import com.aziz.lonelyapp.model.UserEntity;
 import com.aziz.lonelyapp.repository.ChatMemberRepository;
@@ -10,14 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/account/chats")
@@ -47,5 +43,33 @@ public class ChatsController {
         }
 
     }
+    @GetMapping("/members/{chatid}")
+    public ResponseEntity<?> getMembers( @PathVariable String chatid) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<UserEntity> ownId = userRepository.findByName(authentication.getName());
+        if(ownId.isEmpty()){
+            return new ResponseEntity<>("Chat is not found", HttpStatus.NOT_FOUND);
+        }
+        else {
+            boolean flag = false;
+            List<ChatMemberEntity> members = chatMemberRepository.findAllByGroupid(chatid);
+            for (ChatMemberEntity member:members) {
+                if(Objects.equals(member.getMemberid(), ownId.get().getId())){
+                    flag = true;
+                }
+            }
+            if(flag){
+            return new ResponseEntity<>(members, HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity<>("You are not a member of the group", HttpStatus.FORBIDDEN);
+            }
+
+        }
+
+
+    }
+
 }
 

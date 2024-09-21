@@ -44,14 +44,16 @@ public class PhotoController {
             entity.setCreatedAt(System.currentTimeMillis());
             entity.setTarget(target);
             entity.setFromUser(user.getId());// Get the original filename
+
             UploadedPhotoEntity ent =  photoRepository.save(entity);
-            String fileName = String.valueOf( ent.getId()) + ".jpg";
+            user.setAvatar(ent.getId());
+            userRepository.save(user);
+            String fileName = ent.getId() + ".jpg";
             // Ensure the uploads directory exists
             File uploadDir = new File("photos");
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
-
             // Save the file to the uploads directory
             Path filePath = Paths.get("photos" , fileName);
             Files.write(filePath, file.getBytes());
@@ -70,17 +72,25 @@ public class PhotoController {
     @GetMapping("avatar")
     public ResponseEntity<?> upload(@RequestParam("user") String user) throws IOException {
             Optional<UserEntity> entity =  userRepository.findById(user);
-            Path imagePath = Paths.get("photos/3.jpeg");
-            String workingDir = System.getProperty("user.dir");
+            if(entity.isPresent()) {
+                if(entity.get().getAvatar() != null){
+                String avatar = String.valueOf(entity.get().getAvatar());
+                Path imagePath = Paths.get("photos/" + avatar + ".jpg");
+                Resource resource = new FileSystemResource(imagePath);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.png");
+                headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+                //    return new ResponseEntity<>( Files.readAllBytes(imagePath),HttpStatus.OK);
+                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+                }
+                else{
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-        Resource resource = new FileSystemResource(imagePath);
-
-        // Заголовки для корректной передачи файла как multipart
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.png");
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        //    return new ResponseEntity<>( Files.readAllBytes(imagePath),HttpStatus.OK);
-        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+                }
+            }
+            else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
 
 
     }

@@ -82,6 +82,7 @@ public class PhotoController {
         Optional<ChatEntity> chatEntity = chatRepository.findById(chat_id);
         String avatar;
 
+
         if (userEntity.isPresent() && userEntity.get().getAvatar() != null) {
             avatar = String.valueOf(userEntity.get().getAvatar());
         } else if (chatEntity.isPresent() && chatEntity.get().getAvatar() != null) {

@@ -40,17 +40,18 @@ public class PhotoController {
 
     @Autowired
     ChatRepository chatRepository;
+
     private void saveFile(MultipartFile file, String target) throws IOException {
-        Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-        if(auth.isAuthenticated()){
-            String name =auth.getName();
-            UserEntity user =  userRepository.findByName(name).get();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth.isAuthenticated()) {
+            String name = auth.getName();
+            UserEntity user = userRepository.findByName(name).get();
             UploadedPhotoEntity entity = new UploadedPhotoEntity();
             entity.setCreatedAt(System.currentTimeMillis());
             entity.setTarget(target);
             entity.setFromUser(user.getId());// Get the original filename
 
-            UploadedPhotoEntity ent =  photoRepository.save(entity);
+            UploadedPhotoEntity ent = photoRepository.save(entity);
             user.setAvatar(ent.getId());
             userRepository.save(user);
             String fileName = ent.getId() + ".jpg";
@@ -60,10 +61,11 @@ public class PhotoController {
                 uploadDir.mkdirs();
             }
             // Save the file to the uploads directory
-            Path filePath = Paths.get("photos" , fileName);
+            Path filePath = Paths.get("photos", fileName);
             Files.write(filePath, file.getBytes());
         }
     }
+
     @PostMapping("avatar")
     public ResponseEntity<?> upload(@RequestParam("image") MultipartFile file) {
         try {
@@ -75,30 +77,32 @@ public class PhotoController {
     }
 
     @GetMapping("/avatar/{chat_id}")
-    public ResponseEntity<?> getAvatar(@PathVariable String chat_id) throws IOException {
-            Optional<UserEntity> userEntity =  userRepository.findById(chat_id);
-            Optional<ChatEntity> chatEntity = chatRepository.findById(chat_id);
-            String avatar;
-            if( userEntity.isPresent() && userEntity.get().getAvatar() != null){
-             avatar = String.valueOf(userEntity.get().getAvatar());
-            }
-            else if(chatEntity.isPresent() && chatEntity.get().getAvatar() != null){
-                 avatar = String.valueOf(userEntity.get().getAvatar());
-            }
-            else{
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Resource> getAvatar(@PathVariable String chat_id) throws IOException {
+        Optional<UserEntity> userEntity = userRepository.findById(chat_id);
+        Optional<ChatEntity> chatEntity = chatRepository.findById(chat_id);
+        String avatar;
 
-            }
-            Path imagePath = Paths.get("photos/" + avatar + ".jpg");
-            Resource resource = new FileSystemResource(imagePath);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.png");
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            //    return new ResponseEntity<>( Files.readAllBytes(imagePath),HttpStatus.OK);
-            return new ResponseEntity<>(resource, headers, HttpStatus.OK);
-            }
+        if (userEntity.isPresent() && userEntity.get().getAvatar() != null) {
+            avatar = String.valueOf(userEntity.get().getAvatar());
+        } else if (chatEntity.isPresent() && chatEntity.get().getAvatar() != null) {
+            avatar = String.valueOf(chatEntity.get().getAvatar());
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
+        // Construct the image path
+        Path imagePath = Paths.get("photos/" + avatar + ".jpg");
+        Resource resource = new FileSystemResource(imagePath);
 
+        // Set headers (optional but good practice)
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + avatar + ".jpg");
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
+
+
+}
 
 

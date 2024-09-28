@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 public class PhotoController {
     @Autowired
     PhotoRepository photoRepository;
+
     @Autowired
     UserRepository userRepository;
 

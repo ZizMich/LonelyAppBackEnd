@@ -1,5 +1,4 @@
 package com.aziz.lonelyapp.restapi.v1;
-
 import com.aziz.lonelyapp.model.DeviceTokenEntity;
 import com.aziz.lonelyapp.model.RefreshToken;
 import com.aziz.lonelyapp.model.UserEntity;
@@ -10,14 +9,9 @@ import com.aziz.lonelyapp.security.JWTGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

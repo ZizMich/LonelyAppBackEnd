@@ -27,6 +27,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        try{
         String token = getJWTFromRequest(request);
         if(StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
             String username = tokenGenerator.getUsernameFormJWT(token);
@@ -40,8 +41,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("token thread: " + currentThread.getName());
             System.out.println("the security context has been set");
 
+
+        }
+        }
+        catch (Exception e){
+            System.out.println(e);
         }
         filterChain.doFilter(request, response);
+
     }
 
     private String getJWTFromRequest(HttpServletRequest request) {

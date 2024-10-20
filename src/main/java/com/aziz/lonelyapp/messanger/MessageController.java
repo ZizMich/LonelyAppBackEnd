@@ -10,6 +10,7 @@ import com.aziz.lonelyapp.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
+@Component
 public class MessageController implements WebSocketHandler {
     @Autowired
     UserRepository rep;
@@ -72,25 +73,31 @@ public class MessageController implements WebSocketHandler {
 
                 }
                 mess.setSentdate(System.currentTimeMillis());
-
-                MessageEntity e = messagesRepository.save(mess);
                 ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
-                String prettyJsonString = writer.writeValueAsString(e);
 
 
                 if (rec.contains("USER")) {
-                    if (activeUserSessions.containsKey(rec)) {
-                        WebSocketSession receiverSession = activeUserSessions.get(rec);
-                        receiverSession.sendMessage(new TextMessage(prettyJsonString));
-                        session.sendMessage(new TextMessage(prettyJsonString));
+                    if(rep.findById(rec).isPresent()){
+                    MessageEntity e = messagesRepository.save(mess);
+                    String prettyJsonString = writer.writeValueAsString(e);
+                    session.sendMessage(new TextMessage(prettyJsonString));
+                        if (activeUserSessions.containsKey(rec)) {
+                            WebSocketSession receiverSession = activeUserSessions.get(rec);
+                            receiverSession.sendMessage(new TextMessage(prettyJsonString));
+
+
+                        }
                     }
+
 
                 } else if (rec.contains("CHAT")) {
                     for (ChatMemberEntity member : chatRepository.findAllByGroupid(rec)) {
                         String receiverId = member.getMemberid();
+                        MessageEntity e = messagesRepository.save(mess);
+                        String prettyJsonString = writer.writeValueAsString(e);
+                        session.sendMessage(new TextMessage(prettyJsonString));
                         if(!Objects.equals(fromId, receiverId)){
                             if (activeUserSessions.containsKey(receiverId)) {
-
                             WebSocketSession receiverSession = activeUserSessions.get(receiverId);
                             receiverSession.sendMessage(new TextMessage(prettyJsonString));
                             }
@@ -98,7 +105,7 @@ public class MessageController implements WebSocketHandler {
 
 
                     }
-                    session.sendMessage(new TextMessage(prettyJsonString));
+
                 }
 
 

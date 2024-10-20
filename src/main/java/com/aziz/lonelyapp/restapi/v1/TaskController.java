@@ -40,8 +40,6 @@ public class TaskController {
      */
     @GetMapping("/groups/{lang}")
     public ResponseEntity<?> getGroups(@PathVariable String lang) {
-
-
         List<Task> allTasks = taskService.getGroups(lang);
         Map<String, Map<String, Map<String, Object>>> responsemap = new HashMap<>();
         for (Task task : allTasks) {

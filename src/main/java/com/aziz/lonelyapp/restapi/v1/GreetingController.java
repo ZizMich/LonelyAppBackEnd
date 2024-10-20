@@ -2,7 +2,7 @@ package com.aziz.lonelyapp.restapi.v1;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.aziz.lonelyapp.security.JWTGenerator;
 /**
  * Handles GET requests to /greeting
  */
@@ -26,11 +26,9 @@ public class GreetingController {
      */
     @GetMapping("/greeting")
     public String greeting() {
-
+        return "Hello";
         // Increment the counter
-        counter++;
 
-        // Return the greeting with the updated counter
-        return String.format(template, counter);
     }
+
 }

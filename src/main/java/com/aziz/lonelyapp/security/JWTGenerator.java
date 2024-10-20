@@ -8,19 +8,27 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.Data;
+
+import java.io.IOException;
+import java.security.*;
+
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.encrypt.BouncyCastleAesCbcBytesEncryptor;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
 
 import static com.aziz.lonelyapp.security.Constants.exp;
 import static com.aziz.lonelyapp.security.Constants.jwtsecret;
 import static org.springframework.security.config.Elements.JWT;
-
+import java.security.Security;
 @Component
 public class JWTGenerator {
     public String generateToken(String email ){
@@ -67,4 +75,33 @@ public class JWTGenerator {
 
     }
 
+    public static String generatateAPNToken() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+
+        String privateKeyPath = "KEY.p8";
+        String privateKeyContent = new String(Files.readAllBytes(Paths.get(privateKeyPath)))
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+
+        // Convert the string to a PrivateKey object
+        byte[] pkcs8EncodedBytes = java.util.Base64.getDecoder().decode(privateKeyContent);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("EC");
+        PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+
+        // Get the current timestamp (iat)
+        long currentTimeInSeconds = System.currentTimeMillis() / 1000L;
+        // Create JWT token using JJWT
+        String jwtToken = Jwts.builder()
+                .issuer("5B42Z2D5W6")   // iss
+                .issuedAt(new Date(currentTimeInSeconds * 1000))
+                .header() // iat
+                .add("alg", "ES256")    // Header - alg
+                .add("kid", "BH22USQ847")
+                .and() // Header - kid
+                .signWith(privateKey, SignatureAlgorithm.ES256) // Sign with ES256 and private key
+                .compact();
+
+    return jwtToken;
+    }
 }

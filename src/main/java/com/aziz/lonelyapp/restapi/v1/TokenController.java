@@ -73,8 +73,7 @@ public class TokenController {
             entity.setUserId(user.get().getId());
             entity.setDeviceToken(deviceToken);
             deviceTokenRepository.save(entity);
-            return new ResponseEntity<>("Successfully uploaded!", HttpStatus.OK);
-
+            return new ResponseEntity<>("Successfully uploaded!", HttpStatus.OK)
             }
             else{
                 return new ResponseEntity<>("Device token is already uploaded", HttpStatus.OK);

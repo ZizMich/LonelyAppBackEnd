@@ -79,6 +79,7 @@ public class TokenController {
                 return new ResponseEntity<>("Device token is already uploaded", HttpStatus.OK);
             }
         }
+
         else{
             return new ResponseEntity<>("No user found.", HttpStatus.NOT_FOUND);
         }

@@ -20,6 +20,17 @@ import static com.aziz.lonelyapp.security.Constants.jwtsecret;
 
 @Component
 public class JWTGenerator {
+    /**
+     * Generates a JWT token for the given email.
+     *
+     * @param email The email of the user for whom the token is being generated.
+     * @return A JWT token string.
+     *
+     * The token is generated using the HMAC SHA algorithm with a secret key.
+     * The token contains the user's email as the subject, the current date as the issue date,
+     * and an expiration date that is 10 minutes from the current date.
+     * The token is signed with the secret key and returned as a string.
+     */
     public String generateToken(String email ){
         String user = email;
         Date currentdate = new Date();
@@ -29,6 +40,18 @@ public class JWTGenerator {
         String token = Jwts.builder().subject(user).issuedAt(new Date()).expiration(expiredate).signWith(key).compact();
         return token;
     }
+    /**
+     * Retrieves the username from a JWT token.
+     *
+     * @param token The JWT token from which the username is to be extracted.
+     * @return The username extracted from the JWT token.
+     *
+     * This function takes a JWT token as input, decodes the token using the base64-decoded secret key,
+     * verifies the token's signature using the secret key, and extracts the username from the token's payload.
+     * The username is then returned as a string.
+     *
+     * If the token is invalid or expired, an exception will be thrown.
+     */
 
     public String getUsernameFormJWT(String token){
         byte[] bytes = Decoders.BASE64.decode(jwtsecret);
@@ -36,7 +59,19 @@ public class JWTGenerator {
         Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
         return claims.getSubject();
     }
-
+    /**
+     * Validates a JWT token.
+     *
+     * @param token The JWT token to be validated.
+     * @return True if the token is valid, false otherwise.
+     *
+     * This function takes a JWT token as input, decodes the token using the base64-decoded secret key,
+     * verifies the token's signature using the secret key, and checks if the token is expired.
+     * If the token is valid (not expired), the function returns true.
+     * If the token is invalid or expired, an exception is thrown with a message indicating the issue.
+     *
+     * @throws AuthenticationCredentialsNotFoundException If the JWT token is expired or incorrect.
+     */
     public boolean validateToken(String token){
         byte[] bytes = Decoders.BASE64.decode(jwtsecret);
         SecretKey key = Keys.hmacShaKeyFor(bytes);
@@ -49,6 +84,18 @@ public class JWTGenerator {
         }
 
     }
+    /**
+     * Validates an expired JWT token.
+     *
+     * @param token The JWT token to be validated.
+     * @return True if the token is expired, false otherwise.
+     *
+     * This function takes a JWT token as input, decodes the token using the base64-decoded secret key,
+     * verifies the token's signature using the secret key, and checks if the token is expired.
+     * If the token is expired, the function returns true.
+     * If the token is valid (not expired), the function returns false.
+     *
+     */
     public boolean validateExpiredToken(String token){
         byte[] bytes = Decoders.BASE64.decode(jwtsecret);
         SecretKey key = Keys.hmacShaKeyFor(bytes);
@@ -63,7 +110,21 @@ public class JWTGenerator {
         }
 
     }
-
+    /**
+     * Generates a JWT token for Apple Push Notification Service (APNs) using a private key.
+     *
+     * @return A JWT token string for APN authentication.
+     *
+     * This function reads a private key from a file, converts it into a PrivateKey object,
+     * and then uses the JJWT library to generate a JWT token. The token is used for APN authentication.
+     *
+     * The private key is read from a file named "KEY.p8" located in the same directory as the Java program.
+     * The private key file should be in PEM format and should not contain any headers or footers
+     *
+     * The token is signed with the private key and returned as a string.
+     *
+     * @throws RuntimeException If an error occurs during file reading, key conversion, or token generation.
+     */
     public static String generatateAPNToken() {
 
         String privateKeyPath = "KEY.p8";
@@ -101,7 +162,7 @@ public class JWTGenerator {
                 .issuedAt(new Date(currentTimeInSeconds * 1000))
                 .header() // iat
                 .add("alg", "ES256")    // Header - alg
-                .add("kid", "BH22USQ847")
+                .add("kid", "52665M6PUY")
                 .and() // Header - kid
                 .signWith(privateKey, SignatureAlgorithm.ES256) // Sign with ES256 and private key
                 .compact();

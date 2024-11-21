@@ -33,7 +33,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/v1/auth")
 public class AuthController {
-
+    /**
+     * Controller for handling requests from api/v1/auth/login or api/v1/auth/register routes.
+     */
     private final TokenRepository tokenrepository;
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
@@ -53,6 +55,13 @@ public class AuthController {
         this.tokenrepository = tokenrepository;
     }
 
+    /**
+     * Handles user login by authenticating the provided credentials and generating a JWT token.
+     *
+     * @param loginDto the login data transfer object containing the user's email and password.
+     * @return a ResponseEntity containing an AuthResponseDTO with the JWT token, refresh token, and user ID if authentication is successful,
+     *         or an error message with the appropriate HTTP status if authentication fails.
+     */
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
         try {
@@ -90,6 +99,16 @@ public class AuthController {
 
     }
 
+    /**
+     * Registers a new user with the provided registration details.
+     *
+     * @param registerDto the registration data transfer object containing the user's email and password.
+     *                    It includes the necessary information to create a new user account.
+     * @return a ResponseEntity containing a success message if the registration is successful,
+     *         or an error message with the appropriate HTTP status if the registration fails.
+     *         The response status will be OK if the user is registered successfully,
+     *         BAD_REQUEST if the email is already taken, or NOT_FOUND if the user role is not found.
+     */
     @PostMapping("register")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
         if (userRepository.existsByEmail(registerDto.getEmail())) {

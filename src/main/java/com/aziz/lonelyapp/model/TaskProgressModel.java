@@ -4,7 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
+/**
+ * This class represents a task progress in a system. It is used to store and retrieve
+ * progress information for individual tasks and users.
+ *
+ * @author Aziz
+ * @version 1.0
+ *
+ */
 @Entity
 @Table(name = "tasks_progress")
 public class TaskProgressModel {

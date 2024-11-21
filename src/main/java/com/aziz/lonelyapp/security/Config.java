@@ -27,15 +27,36 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class is responsible for configuring Spring Security for the application.
+ * It sets up authentication, authorization, and CSRF protection.
+ *
+ * @author YourName
+ * @since 1.0.0
+ */
 @Configuration
 @EnableWebSecurity
 public class Config {
     private CustomUserDetailsService userDetailsService;
+
+    /**
+     * Constructor for Config class.
+     *
+     * @param userDetailsService The custom user details service to load user-specific data.
+     */
     @Autowired
     public Config(CustomUserDetailsService userDetailsService){
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * This method creates a security filter chain for the application.
+     * It configures CSRF protection, session management, and authorization rules.
+     *
+     * @param http The HttpSecurity object to configure security settings.
+     * @return The configured SecurityFilterChain.
+     * @throws Exception If an error occurs during security configuration.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -54,19 +75,34 @@ public class Config {
         return http.build();
     }
 
-
-
+    /**
+     * This method creates an authentication manager for the application.
+     *
+     * @param authenticationConfiguration The authentication configuration object.
+     * @return The configured AuthenticationManager.
+     * @throws Exception If an error occurs during authentication manager creation.
+     */
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    /**
+     * This method creates a password encoder for the application.
+     *
+     * @return The configured PasswordEncoder.
+     */
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * This method creates a JWT authentication filter for the application.
+     *
+     * @return The configured JWTAuthenticationFilter.
+     */
     @Bean
     public JWTAuthenticationFilter jwtAuthenticationFilter(){
         return new JWTAuthenticationFilter();

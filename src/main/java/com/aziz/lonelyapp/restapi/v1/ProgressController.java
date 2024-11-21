@@ -26,6 +26,15 @@ public class ProgressController {
     UserRepository userRepository;
     @Autowired
     TokenRepository tokenRepository;
+
+    /**
+     * Retrieves the active groups and their associated tasks for the authenticated user.
+     * This method fetches the user's task progress data and organizes it into a nested map structure.
+     *
+     * @return A ResponseEntity containing either:
+     *         - A map of active groups, their tasks, and progress information (HTTP status 200 OK)
+     *         - An error message if the user is not found (HTTP status 404 NOT FOUND)
+     */
     @GetMapping()
     public ResponseEntity<?> getActiveGroups() {
         System.out.println("processed");

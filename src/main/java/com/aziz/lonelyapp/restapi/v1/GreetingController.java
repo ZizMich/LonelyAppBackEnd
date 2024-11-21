@@ -15,9 +15,7 @@ import java.security.spec.InvalidKeySpecException;
 public class GreetingController {
     @GetMapping("/greeting")
     public String greeting() {
-        Notifications notifications = Notifications.getInstance();
-        Boolean b = notifications.sendNotification("USER-acf320c8-2b1a-4054-9abd-11be8932a9de");
-        return b ? "it works": "fuck it does not work";
+        return "hello";
     }
 
 }

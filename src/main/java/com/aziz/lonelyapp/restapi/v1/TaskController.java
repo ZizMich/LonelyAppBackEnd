@@ -33,10 +33,10 @@ public class TaskController {
     }
 
     /**
-     * Retrieves a task by its ID from the repository.
+     * Retrieves a task group by its language from the repository.
      *
-     * @param id the ID of the task to retrieve
-     * @return the task with the given ID
+     * @param lang the language of the task group to retrieve
+     * @return the task group with the given language
      */
     @GetMapping("/groups/{lang}")
     public ResponseEntity<?> getGroups(@PathVariable String lang) {

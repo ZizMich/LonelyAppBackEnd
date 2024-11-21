@@ -20,7 +20,6 @@ repositories {
 }
 
 dependencies {
-
 	implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
@@ -40,6 +39,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+	implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 }
 
 tasks.named('test') {

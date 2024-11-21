@@ -14,7 +14,7 @@ import java.util.List;
  * UserDetails
  * interface from Spring Security.
  *
- * @author Aziz Zain
+ * @author Aziz
  */
 public class CustomUserDetail implements UserDetails {
 
